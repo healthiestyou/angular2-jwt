@@ -30,6 +30,7 @@ describe('AuthConfig', ()=> {
         expect(config.noJwtError).toBe(false);
         expect(config.noTokenScheme).toBe(false);
         expect(config.globalHeaders).toEqual([]);
+        expect(config.globalHeadersIgnoreIfExists).toEqual(false);
         expect(config.tokenGetter).toBeDefined();
         const token = "Token";
         localStorage.setItem(config.tokenName, token);
@@ -44,6 +45,7 @@ describe('AuthConfig', ()=> {
             tokenGetter: ()=>"this is a token",
             noJwtError: true,
             globalHeaders: [{"header": "value"}, {"header2": "value2"}],
+            globalHeadersIgnoreIfExists: true,
             noTokenScheme: true
         };
         const config = new AuthConfig(configExpected).getConfig();
@@ -54,6 +56,7 @@ describe('AuthConfig', ()=> {
         expect(config.noJwtError).toBe(configExpected.noJwtError);
         expect(config.noTokenScheme).toBe(configExpected.noTokenScheme);
         expect(config.globalHeaders).toEqual(configExpected.globalHeaders);
+        expect(config.globalHeadersIgnoreIfExists).toEqual(configExpected.globalHeadersIgnoreIfExists);
         expect(config.tokenGetter).toBeDefined();
         expect(config.tokenGetter()).toBe("this is a token");
     });

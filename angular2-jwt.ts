@@ -16,6 +16,7 @@ import "rxjs/add/operator/mergeMap";
 
 export interface IAuthConfig {
   globalHeaders: Array<Object>;
+  globalHeadersIgnoreIfExists: boolean;
   headerName: string;
   headerPrefix: string;
   noJwtError: boolean;
@@ -33,6 +34,7 @@ export interface IAuthConfigOptional {
     noJwtError?: boolean;
     noClientCheck?: boolean;
     globalHeaders?: Array<Object>;
+    globalHeadersIgnoreIfExists?: boolean;
     noTokenScheme?: boolean;
 }
 
@@ -50,6 +52,7 @@ const AuthConfigDefaults: IAuthConfig = {
     noJwtError: false,
     noClientCheck: false,
     globalHeaders: [],
+    globalHeadersIgnoreIfExists: false,
     noTokenScheme: false
 };
 
@@ -144,6 +147,9 @@ export class AuthHttp {
     headers.forEach((header: Object) => {
       let key: string = Object.keys(header)[0];
       let headerValue: string = (header as any)[key];
+      if (this.config.globalHeadersIgnoreIfExists && (request.headers as Headers).get(key)) {
+        return;
+      }
       (request.headers as Headers).set(key, headerValue);
     });
   }
@@ -338,7 +344,7 @@ function toObject(val: any) {
   if (val === null || val === undefined) {
     throw new TypeError('Object.assign cannot be called with null or undefined');
   }
-  
+
   return Object(val);
 }
 
@@ -346,16 +352,16 @@ function objectAssign(target: any, ...source: any[]) {
   let from: any;
   let to = toObject(target);
   let symbols: any;
-  
+
   for (var s = 0; s < source.length; s++) {
     from = Object(source[s]);
-    
+
     for (var key in from) {
       if (hasOwnProperty.call(from, key)) {
         to[key] = from[key];
       }
     }
-    
+
     if ((<any>Object).getOwnPropertySymbols) {
       symbols = (<any>Object).getOwnPropertySymbols(from);
       for (var i = 0; i < symbols.length; i++) {
